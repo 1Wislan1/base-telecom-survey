@@ -477,35 +477,6 @@ h1:focus, h2:focus { outline: none; }
 .nav .btn { flex: 1; padding: 0 16px; }
 .nav .btn-primary { flex: 1.4; }
 
-/* ---------- Проверка ответов ---------- */
-
-.review-list { margin-top: 20px; display: grid; gap: 10px; }
-
-.review-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px 16px;
-  background: var(--background);
-  border-radius: var(--radius-sm);
-}
-
-.review-q { font-size: 14px; color: var(--muted); }
-.review-a { margin-top: 2px; font-weight: 600; overflow-wrap: anywhere; white-space: pre-line; }
-
-.review-edit {
-  flex: 0 0 auto;
-  min-height: 44px;
-  padding: 0 10px;
-  background: none;
-  border: none;
-  color: var(--primary);
-  font-weight: 700;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 /* ---------- Подвал ---------- */
 
 .site-footer { padding: 8px 0 28px; font-size: 14px; color: var(--muted); }

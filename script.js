@@ -204,7 +204,6 @@ const $ = (selector) => document.querySelector(selector);
 const screens = {
   welcome: $("#screen-welcome"),
   survey: $("#screen-survey"),
-  review: $("#screen-review"),
   thanks: $("#screen-thanks")
 };
 
@@ -212,15 +211,12 @@ const stepEl = $("#step");
 const stepError = $("#step-error");
 const backBtn = $("#btn-back");
 const nextBtn = $("#btn-next");
+const nextText = $("#btn-next-text");
+const nextSpinner = nextBtn.querySelector(".spinner");
 const progressLabel = $("#progress-label");
 const progressPercent = $("#progress-percent");
 const progressTrack = $("#progress-track");
 const progressBar = $("#progress-bar");
-const reviewList = $("#review-list");
-const submitBtn = $("#btn-submit");
-const submitText = $("#btn-submit-text");
-const submitSpinner = submitBtn.querySelector(".spinner");
-const submitError = $("#submit-error");
 const honeypot = $("#hp");
 const demoNotice = $("#demo-notice");
 
@@ -571,7 +567,7 @@ function renderStep() {
 
   stepEl.replaceChildren(buildQuestion(q));
   stepError.hidden = true;
-  nextBtn.textContent = state.step === total - 1 ? "Завершить опрос" : "Далее";
+  nextText.textContent = state.step === total - 1 ? "Завершить опрос" : "Далее";
   refreshNav();
 
   // Лёгкая анимация появления
@@ -590,6 +586,7 @@ function startSurvey() {
   state.startedAt = Date.now();
   state.submissionId = newId();
   state.submitted = false;
+  setSubmitting(false); // снова включаем кнопки после прошлой отправки
   analytics.track("survey_start");
   showScreen("survey");
   renderStep();
@@ -617,7 +614,8 @@ function goNext() {
     state.step += 1;
     renderStep();
   } else {
-    openReview();
+    // Последний вопрос: сразу отправляем ответы, без отдельной страницы проверки
+    submitSurvey();
   }
 }
 
@@ -631,60 +629,15 @@ function goBack() {
 }
 
 /* ---------------------------------------------------------
-   10. ПРОВЕРКА ОТВЕТОВ ПЕРЕД ОТПРАВКОЙ
+   10. ОТПРАВКА В GOOGLE ТАБЛИЦУ
    --------------------------------------------------------- */
 
-function answerText(q) {
-  const a = state.answers;
-  if (q.type === "extra") {
-    const lines = [];
-    lines.push("Населённый пункт: " + (cleanText(a.location) || "не указан"));
-    lines.push("Связаться с вами: " + (a.contactAllowed || "не указано"));
-    if (a.contactAllowed === CONTACT_YES && cleanText(a.phone)) {
-      lines.push("Телефон: " + cleanText(a.phone));
-    }
-    return lines.join("\n");
-  }
-  const value = a[q.id];
-  if (Array.isArray(value)) return value.length ? value.join(", ") : "—";
-  if (value === undefined || cleanText(value) === "") return "— (пропущено)";
-  return typeof value === "number" ? String(value) : cleanText(value);
-}
-
-function openReview() {
-  reviewList.replaceChildren();
-  QUESTIONS.forEach((q, index) => {
-    const item = el("div", "review-item");
-    const textBox = el("div", "");
-    textBox.append(el("p", "review-q", q.title), el("p", "review-a", answerText(q)));
-
-    const edit = el("button", "review-edit", "Изменить");
-    edit.type = "button";
-    edit.setAttribute("aria-label", "Изменить ответ: " + q.title);
-    edit.addEventListener("click", () => {
-      state.step = index;
-      showScreen("survey");
-      renderStep();
-    });
-
-    item.append(textBox, edit);
-    reviewList.append(item);
-  });
-
-  submitError.hidden = true;
-  setSubmitting(false);
-  submitText.textContent = "Отправить ответы";
-  showScreen("review");
-}
-
-/* ---------------------------------------------------------
-   11. ОТПРАВКА В GOOGLE ТАБЛИЦУ
-   --------------------------------------------------------- */
-
+// Во время отправки кнопки блокируются, чтобы не создать дубликат
 function setSubmitting(isSubmitting) {
-  submitBtn.disabled = isSubmitting || state.submitted;
-  submitSpinner.hidden = !isSubmitting;
-  if (isSubmitting) submitText.textContent = "Отправляем…";
+  nextBtn.disabled = isSubmitting || state.submitted;
+  backBtn.disabled = isSubmitting;
+  nextSpinner.hidden = !isSubmitting;
+  if (isSubmitting) nextText.textContent = "Отправляем…";
 }
 
 // Собирает данные в том виде, как их ждёт Code.gs
@@ -737,7 +690,7 @@ async function submitSurvey() {
   if (state.isSubmitting || state.submitted) return;
   state.isSubmitting = true;
   setSubmitting(true);
-  submitError.hidden = true;
+  stepError.hidden = true;
 
   const elapsedSeconds = Math.round((Date.now() - state.startedAt) / 1000);
   const payload = buildPayload(elapsedSeconds);
@@ -760,13 +713,13 @@ async function submitSurvey() {
     showScreen("thanks");
   } catch (error) {
     console.error("Ошибка отправки:", error);
-    submitError.textContent = "Не удалось отправить ответы. Проверьте интернет и нажмите «Повторить отправку». Ваши ответы сохранены, заполнять заново не нужно.";
-    submitError.hidden = false;
-    submitText.textContent = "Повторить отправку";
+    stepError.textContent = "Не удалось отправить ответы. Проверьте интернет и нажмите «Повторить отправку». Ваши ответы сохранены, заполнять заново не нужно.";
+    stepError.hidden = false;
+    nextText.textContent = "Повторить отправку";
   } finally {
     state.isSubmitting = false;
     setSubmitting(false);
-    if (submitError.hidden === false) submitText.textContent = "Повторить отправку";
+    // setSubmitting(false) не трогает текст кнопки, поэтому «Повторить отправку» остаётся
   }
 }
 
@@ -794,12 +747,6 @@ function loadLogo() {
 $("#btn-start").addEventListener("click", startSurvey);
 nextBtn.addEventListener("click", goNext);
 backBtn.addEventListener("click", goBack);
-$("#btn-review-back").addEventListener("click", () => {
-  state.step = QUESTIONS.length - 1;
-  showScreen("survey");
-  renderStep();
-});
-submitBtn.addEventListener("click", submitSurvey);
 $("#btn-home").addEventListener("click", () => {
   state.answers = {};
   state.step = 0;
