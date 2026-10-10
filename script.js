@@ -728,16 +728,20 @@ async function submitSurvey() {
    Если в папке assets лежит logo.svg — он заменит текст «БЕЙС ТЕЛЕКОМ».
    --------------------------------------------------------- */
 
-function loadLogo() {
+// Сначала ищем assets/logo.svg, если его нет — assets/logo.png
+const LOGO_FILES = ["assets/logo.svg", "assets/logo.png"];
+
+function loadLogo(index = 0) {
+  if (index >= LOGO_FILES.length) return; // логотипа нет — остаётся текст «БЕЙС ТЕЛЕКОМ»
   const probe = new Image();
   probe.onload = () => {
-    const logo = $("#logo");
     const img = el("img", "logo-img");
-    img.src = "assets/logo.svg";
+    img.src = LOGO_FILES[index];
     img.alt = "Бейс Телеком";
-    logo.replaceChildren(img);
+    $("#logo").replaceChildren(img);
   };
-  probe.src = "assets/logo.svg";
+  probe.onerror = () => loadLogo(index + 1);
+  probe.src = LOGO_FILES[index];
 }
 
 /* ---------------------------------------------------------
