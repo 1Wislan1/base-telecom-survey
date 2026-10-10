@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Опрос клиентов — Бейс Телеком</title>
+  <meta name="description" content="Короткий анонимный опрос клиентов Бейс Телеком. Оцените качество интернета и обслуживания.">
+  <meta name="theme-color" content="#0B2A5B">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+
+  <!-- ШАПКА. Логотип: если положить файл assets/logo.svg, он подставится сам -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" id="logo" href="./" aria-label="Бейс Телеком — на главную">
+        <span class="logo-text" aria-hidden="true">
+          <span>БЕЙС</span>
+          <span>ТЕЛЕКОМ</span>
+        </span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+
+    <!-- ЭКРАН 1. ПРИВЕТСТВИЕ -->
+    <section id="screen-welcome" class="screen hero" aria-labelledby="welcome-title">
+      <svg class="waves" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+          <path d="M78.8 148.8 A30 30 0 0 1 121.2 148.8"/>
+          <path d="M57.6 127.6 A60 60 0 0 1 142.4 127.6"/>
+          <path d="M36.4 106.4 A90 90 0 0 1 163.6 106.4"/>
+          <path d="M15.1 85.1 A120 120 0 0 1 184.9 85.1"/>
+        </g>
+        <circle cx="100" cy="170" r="7" fill="currentColor"/>
+      </svg>
+
+      <div class="hero-content">
+        <p class="eyebrow">Бейс Телеком</p>
+        <h1 id="welcome-title" data-focus tabindex="-1">Помогите нам стать лучше</h1>
+        <p class="lead">Оцените работу Бейс Телеком — это займёт всего 2–3 минуты.</p>
+        <p class="hero-text">Ваше мнение поможет нам понять, что уже работает хорошо, а что стоит улучшить.</p>
+        <button type="button" class="btn btn-primary btn-large" id="btn-start">Пройти опрос</button>
+        <p class="small">Опрос анонимный</p>
+      </div>
+    </section>
+
+    <!-- ЭКРАН 2. ВОПРОСЫ (по одному) -->
+    <section id="screen-survey" class="screen" hidden aria-label="Опрос">
+      <div class="card">
+        <div class="progress">
+          <div class="progress-top">
+            <span id="progress-label" class="progress-label">Вопрос 1 из 13</span>
+            <span id="progress-percent" class="progress-percent">0%</span>
+          </div>
+          <div class="progress-track" id="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progress-label">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <div id="step" class="step"></div>
+
+        <p id="step-error" class="error" role="alert" hidden></p>
+
+        <div class="nav">
+          <button type="button" class="btn btn-secondary" id="btn-back">Назад</button>
+          <button type="button" class="btn btn-primary" id="btn-next">Далее</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ЭКРАН 3. ПРОВЕРКА ПЕРЕД ОТПРАВКОЙ -->
+    <section id="screen-review" class="screen" hidden aria-labelledby="review-title">
+      <div class="card">
+        <h2 id="review-title" class="question-title" data-focus tabindex="-1">Проверьте свои ответы</h2>
+        <p class="hint">Если всё верно — нажмите «Отправить ответы». Любой ответ можно исправить.</p>
+        <div id="review-list" class="review-list"></div>
+
+        <p id="submit-error" class="error" role="alert" hidden></p>
+
+        <div class="nav">
+          <button type="button" class="btn btn-secondary" id="btn-review-back">Назад</button>
+          <button type="button" class="btn btn-primary" id="btn-submit">
+            <span class="spinner" aria-hidden="true" hidden></span>
+            <span id="btn-submit-text">Отправить ответы</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ЭКРАН 4. СПАСИБО -->
+    <section id="screen-thanks" class="screen hero hero-thanks" hidden aria-labelledby="thanks-title">
+      <svg class="waves" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+          <path d="M78.8 148.8 A30 30 0 0 1 121.2 148.8"/>
+          <path d="M57.6 127.6 A60 60 0 0 1 142.4 127.6"/>
+          <path d="M36.4 106.4 A90 90 0 0 1 163.6 106.4"/>
+          <path d="M15.1 85.1 A120 120 0 0 1 184.9 85.1"/>
+        </g>
+        <circle cx="100" cy="170" r="7" fill="currentColor"/>
+      </svg>
+
+      <div class="hero-content">
+        <div class="check-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        </div>
+        <h2 id="thanks-title" class="hero-title" data-focus tabindex="-1">Спасибо за ваш отзыв!</h2>
+        <p class="lead">Ваше мнение помогает Бейс Телеком становиться лучше.</p>
+        <p class="hero-text">Мы обязательно учитываем отзывы наших клиентов.</p>
+        <p id="demo-notice" class="demo-notice" hidden>Режим демонстрации: ответы никуда не отправлены. Их можно посмотреть в консоли браузера (клавиша F12). Чтобы включить настоящую отправку, вставьте адрес Google Apps Script в script.js.</p>
+        <button type="button" class="btn btn-primary btn-large" id="btn-home">Вернуться на главную</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">© Бейс Телеком</div>
+  </footer>
+
+  <!-- Ловушка для спам-ботов: человек её не видит. Не удалять. -->
+  <div class="hp-field" aria-hidden="true">
+    <label>Не заполняйте это поле
+      <input type="text" name="website" id="hp" tabindex="-1" autocomplete="off">
+    </label>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
